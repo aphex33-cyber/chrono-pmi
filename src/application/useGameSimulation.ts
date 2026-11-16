@@ -25,9 +25,13 @@ import {
 } from "@/domain/types";
 import {
   clearLeaderboard,
+  fetchRemoteLeaderboard,
+  isSupabaseConfigured,
   loadLeaderboard,
   loadParticipantName,
+  loadWorkshopCode,
   saveParticipantName,
+  saveWorkshopCode,
   upsertLeaderboardEntry,
 } from "@/infrastructure/storage";
 
@@ -37,7 +41,12 @@ export interface UseGameSimulationResult {
   currentScenario: Scenario | null;
   evaluation: FinalEvaluation | null;
   leaderboard: LeaderboardEntry[];
+  isRemoteSyncEnabled: boolean;
   setParticipantName: (name: string) => void;
+  setWorkshopCode: (code: string) => void;
+  setWorkshopMode: (enabled: boolean) => void;
+  setRoundTimerSeconds: (seconds: number | null) => void;
+  refreshLeaderboard: () => Promise<void>;
   startPreTest: (mode: ProjectMode) => void;
   completePreTest: (selectedIndices: number[]) => void;
   beginSimulationFromPreTest: () => void;
@@ -55,24 +64,75 @@ export function useGameSimulation(): UseGameSimulationResult {
   const [state, setState] = useState<GameState>(() => createInitialGameState());
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [currentRunId, setCurrentRunId] = useState<string | null>(null);
+  const isRemoteSyncEnabled = isSupabaseConfigured();
+
+  const refreshLeaderboard = useCallback(async () => {
+    const local = loadLeaderboard();
+    if (!isSupabaseConfigured()) {
+      setLeaderboard(local);
+      return;
+    }
+    const remote = await fetchRemoteLeaderboard(state.workshopCode);
+    if (remote) {
+      const mergedMap = new Map<string, LeaderboardEntry>();
+      for (const item of local) mergedMap.set(item.id, item);
+      for (const item of remote) mergedMap.set(item.id, item);
+      setLeaderboard(
+        Array.from(mergedMap.values()).sort(
+          (a, b) => b.simulationScore - a.simulationScore
+        )
+      );
+    } else {
+      setLeaderboard(local);
+    }
+  }, [state.workshopCode]);
 
   useEffect(() => {
     const savedName = loadParticipantName();
-    if (savedName) {
-      setState((prev) => ({ ...prev, participantName: savedName }));
-    }
+    const savedWorkshop = loadWorkshopCode();
+    setState((prev) => ({
+      ...prev,
+      participantName: savedName || prev.participantName,
+      workshopCode: savedWorkshop || prev.workshopCode,
+    }));
     setLeaderboard(loadLeaderboard());
   }, []);
+
+  useEffect(() => {
+    if (isRemoteSyncEnabled) {
+      void refreshLeaderboard();
+    }
+  }, [isRemoteSyncEnabled, refreshLeaderboard]);
 
   const setParticipantName = useCallback((name: string) => {
     saveParticipantName(name);
     setState((prev) => ({ ...prev, participantName: name }));
   }, []);
 
+  const setWorkshopCode = useCallback((code: string) => {
+    const normalized = code.toUpperCase();
+    saveWorkshopCode(normalized);
+    setState((prev) => ({ ...prev, workshopCode: normalized }));
+  }, []);
+
+  const setWorkshopMode = useCallback((enabled: boolean) => {
+    setState((prev) => ({ ...prev, workshopMode: enabled }));
+  }, []);
+
+  const setRoundTimerSeconds = useCallback((seconds: number | null) => {
+    setState((prev) => ({ ...prev, roundTimerSeconds: seconds }));
+  }, []);
+
   const startPreTest = useCallback((mode: ProjectMode) => {
-    setCurrentRunId(`run-${Date.now()}`);
+    setCurrentRunId(`run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
     setState((prev) => ({
-      ...createInitialGameState(null, prev.participantName),
+      ...createInitialGameState(
+        null,
+        prev.participantName,
+        prev.workshopCode,
+        prev.workshopMode,
+        prev.roundTimerSeconds
+      ),
       mode,
       status: "pretest",
       indicators: { ...MODE_CONFIGS[mode].initialIndicators },
@@ -104,9 +164,15 @@ export function useGameSimulation(): UseGameSimulationResult {
   }, []);
 
   const startGameDirect = useCallback((mode: ProjectMode) => {
-    setCurrentRunId(`run-${Date.now()}`);
+    setCurrentRunId(`run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
     setState((prev) => ({
-      ...createInitialGameState(mode, prev.participantName),
+      ...createInitialGameState(
+        mode,
+        prev.participantName,
+        prev.workshopCode,
+        prev.workshopMode,
+        prev.roundTimerSeconds
+      ),
       preTestResult: null,
       postTestResult: null,
     }));
@@ -130,7 +196,8 @@ export function useGameSimulation(): UseGameSimulationResult {
         return;
       }
 
-      const runId = currentRunId ?? `run-${Date.now()}`;
+      const runId =
+        currentRunId ?? `run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       if (!currentRunId) setCurrentRunId(runId);
 
       const isVictory = nextState.status === "victory";
@@ -142,10 +209,10 @@ export function useGameSimulation(): UseGameSimulationResult {
 
       let gapsClosed: number | null = null;
       let totalGaps: number | null = null;
+      const gapsDetected = nextState.preTestResult?.gaps ?? [];
       if (nextState.preTestResult && nextState.postTestResult) {
-        const preGaps = nextState.preTestResult.gaps;
-        totalGaps = preGaps.length;
-        gapsClosed = preGaps.filter((domain) => {
+        totalGaps = gapsDetected.length;
+        gapsClosed = gapsDetected.filter((domain) => {
           const postAns = nextState.postTestResult?.answers.find(
             (a) => a.domain === domain
           );
@@ -156,6 +223,7 @@ export function useGameSimulation(): UseGameSimulationResult {
       const entry: LeaderboardEntry = {
         id: runId,
         participantName: nextState.participantName.trim() || "Comandante Anónimo",
+        workshopCode: nextState.workshopCode.trim().toUpperCase(),
         mode: nextState.mode,
         status: nextState.status,
         simulationScore: evalResult ? evalResult.totalScore : decisionPts,
@@ -163,6 +231,7 @@ export function useGameSimulation(): UseGameSimulationResult {
         preTestScore: nextState.preTestResult?.score ?? null,
         preTestLevel: nextState.preTestResult?.level ?? null,
         postTestScore: nextState.postTestResult?.score ?? null,
+        gapsDetected,
         gapsClosed,
         totalGaps,
         indicators: nextState.indicators,
@@ -213,7 +282,7 @@ export function useGameSimulation(): UseGameSimulationResult {
           ...prev,
           postTestResult: result,
         };
-        const statusForSave: GameStatusForSave = prev.failedIndicator
+        const statusForSave: "victory" | "gameover" = prev.failedIndicator
           ? "gameover"
           : "victory";
         persistRunToLeaderboard({ ...updated, status: statusForSave });
@@ -232,7 +301,15 @@ export function useGameSimulation(): UseGameSimulationResult {
 
   const resetGame = useCallback(() => {
     setCurrentRunId(null);
-    setState((prev) => createInitialGameState(null, prev.participantName));
+    setState((prev) =>
+      createInitialGameState(
+        null,
+        prev.participantName,
+        prev.workshopCode,
+        prev.workshopMode,
+        prev.roundTimerSeconds
+      )
+    );
   }, []);
 
   const clearScores = useCallback(() => {
@@ -240,7 +317,10 @@ export function useGameSimulation(): UseGameSimulationResult {
   }, []);
 
   const evaluation = useMemo<FinalEvaluation | null>(() => {
-    if (state.status !== "victory" && !(state.status === "posttest" && !state.failedIndicator)) {
+    if (
+      state.status !== "victory" &&
+      !(state.status === "posttest" && !state.failedIndicator)
+    ) {
       return null;
     }
     return evaluatePerformance(state);
@@ -252,7 +332,12 @@ export function useGameSimulation(): UseGameSimulationResult {
     currentScenario,
     evaluation,
     leaderboard,
+    isRemoteSyncEnabled,
     setParticipantName,
+    setWorkshopCode,
+    setWorkshopMode,
+    setRoundTimerSeconds,
+    refreshLeaderboard,
     startPreTest,
     completePreTest,
     beginSimulationFromPreTest,
@@ -266,5 +351,3 @@ export function useGameSimulation(): UseGameSimulationResult {
     clearScores,
   };
 }
-
-type GameStatusForSave = "victory" | "gameover";

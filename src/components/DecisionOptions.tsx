@@ -10,6 +10,7 @@ interface DecisionOptionsProps {
   round: number;
   options: [DecisionOption, DecisionOption, DecisionOption];
   selectedOptionId: string | null;
+  hideHints?: boolean;
   onSelect: (option: DecisionOption) => void;
   onNextRound: () => void;
 }
@@ -19,6 +20,7 @@ export function DecisionOptions({
   round,
   options,
   selectedOptionId,
+  hideHints = false,
   onSelect,
   onNextRound,
 }: DecisionOptionsProps) {
@@ -80,7 +82,7 @@ export function DecisionOptions({
                     </span>
                   ) : (
                     <span className="font-mono text-[11px] font-semibold text-zinc-400">
-                      {option.hint}
+                      {hideHints && !hasSelection ? "Debate en mesa" : option.hint}
                     </span>
                   )}
                 </div>

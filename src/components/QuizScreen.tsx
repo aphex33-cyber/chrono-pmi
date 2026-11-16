@@ -209,6 +209,12 @@ export function QuizScreen({
                 {questions.map((q, idx) => {
                   const ans = currentResult.answers[idx];
                   const ok = ans?.correct;
+                  const letters = ["A", "B", "C", "D"];
+                  const chosenText =
+                    ans && ans.selectedIndex >= 0
+                      ? `${letters[ans.selectedIndex]}) ${q.options[ans.selectedIndex]}`
+                      : "Sin respuesta";
+                  const correctText = `${letters[q.correctIndex]}) ${q.options[q.correctIndex]}`;
                   return (
                     <div
                       key={q.id}
@@ -229,6 +235,14 @@ export function QuizScreen({
                         )}
                       </div>
                       <p className="mt-1 font-semibold text-white">{q.question}</p>
+                      <p className={`mt-1 font-mono text-[11px] ${ok ? "text-emerald-300" : "text-red-300"}`}>
+                        Tu respuesta: {chosenText}
+                      </p>
+                      {!ok && (
+                        <p className="mt-0.5 font-mono text-[11px] text-emerald-300">
+                          Correcta: {correctText}
+                        </p>
+                      )}
                       <p className="mt-1 text-zinc-300">{q.explanation}</p>
                       <p className="mt-1 font-mono text-[10px] text-zinc-400">
                         Ref: {q.bookRef}

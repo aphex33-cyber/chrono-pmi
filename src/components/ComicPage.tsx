@@ -141,35 +141,70 @@ export function ComicPage({
 
       {/* PANEL 3 (REACTION BEAT): Slams in when player picks a decision */}
       <AnimatePresence>
-        {isFeedback && lastOutcome && (
-          <motion.div
-            initial={{ opacity: 0, y: -12, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: "spring", stiffness: 360, damping: 22 }}
-            className="comic-vignette relative overflow-hidden bg-zinc-900 px-4 py-3.5 sm:px-6"
-          >
-            <div className="speed-lines-overlay pointer-events-none absolute inset-0" />
-            <div className="relative z-10 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-              <div className="space-y-1">
+        {isFeedback && lastOutcome && (() => {
+          const score = lastOutcome.pmiBestPracticeScore;
+          const isOptimal = score >= 70;
+          const isPartial = score >= 40 && score < 70;
+          const tierColor = isOptimal
+            ? "text-emerald-400"
+            : isPartial
+              ? "text-amber-400"
+              : "text-red-400";
+          const tierBadgeBg = isOptimal
+            ? "bg-emerald-400 text-zinc-950"
+            : isPartial
+              ? "bg-amber-400 text-zinc-950"
+              : "bg-red-500 text-white";
+          const tierLabel = isOptimal
+            ? `ÓPTIMA (${score}/75 PTS)`
+            : isPartial
+              ? `TÁCTICA CON COSTO (${score}/75 PTS)`
+              : `ERROR CRÍTICO (${score}/75 PTS)`;
+          const bestOption = !isOptimal
+            ? scenario.options.reduce((best, opt) =>
+                opt.pmiBestPracticeScore > best.pmiBestPracticeScore ? opt : best
+              )
+            : null;
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: "spring", stiffness: 360, damping: 22 }}
+              className="comic-vignette relative overflow-hidden bg-zinc-900 px-4 py-3.5 sm:px-6"
+            >
+              <div className="speed-lines-overlay pointer-events-none absolute inset-0" />
+              <div className="relative z-10 space-y-2.5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="comic-sfx -rotate-3 font-black italic text-xl text-emerald-400">
+                  <span className={`comic-sfx -rotate-3 font-black italic text-xl ${tierColor}`}>
                     {lastOutcome.sfxWord}
                   </span>
-                  <span className="border-2 border-black bg-emerald-400 px-2 py-0.5 font-mono text-[11px] font-black uppercase text-zinc-950">
+                  <span className={`border-2 border-black px-2 py-0.5 font-mono text-[11px] font-black uppercase ${tierBadgeBg}`}>
+                    {tierLabel}
+                  </span>
+                  <span className="border-2 border-black bg-zinc-800 px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-zinc-200">
                     {lastOutcome.pmiArea}
                   </span>
                 </div>
                 <p className="text-sm font-bold text-white sm:text-base">
                   {lastOutcome.outcomeNarrative}
                 </p>
-                <p className="font-mono text-xs text-zinc-300">
-                  Tip PMI: {lastOutcome.pmiFeedback}
+                <p className="font-mono text-xs text-zinc-200">
+                  Diagnóstico PMBOK® v8: {lastOutcome.pmiFeedback}
                 </p>
+                {bestOption && (
+                  <div className="rounded-sm border border-emerald-500/40 bg-emerald-950/35 px-3 py-2 font-mono text-xs text-emerald-200">
+                    <span className="font-black text-emerald-300">
+                      Ruta Óptima PMBOK® v8 ([{bestOption.code}] {bestOption.label}):
+                    </span>{" "}
+                    {bestOption.pmiFeedback}
+                  </div>
+                )}
               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </motion.section>
   );

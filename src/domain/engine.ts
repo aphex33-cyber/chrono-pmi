@@ -5,9 +5,12 @@ import {
   GameIndicators,
   GameState,
   IndicatorKey,
+  LeaderboardEntry,
+  PmbokDomain,
   ProjectMode,
   Scenario,
   VariableImpactReport,
+  WorkshopAnalytics,
 } from "./types";
 
 export const TOTAL_ROUNDS = 8;
@@ -38,7 +41,10 @@ export function getScenariosForMode(mode: ProjectMode): Scenario[] {
 
 export function createInitialGameState(
   mode: ProjectMode | null = null,
-  participantName = ""
+  participantName = "",
+  workshopCode = "",
+  workshopMode = false,
+  roundTimerSeconds: number | null = null
 ): GameState {
   const initialIndicators: GameIndicators = mode
     ? { ...MODE_CONFIGS[mode].initialIndicators }
@@ -46,6 +52,9 @@ export function createInitialGameState(
 
   return {
     participantName,
+    workshopCode,
+    workshopMode,
+    roundTimerSeconds,
     mode,
     status: mode ? "playing" : "start",
     currentRoundIndex: 0,
@@ -332,5 +341,78 @@ export function evaluatePerformance(state: GameState): FinalEvaluation {
     improvements,
     variableImpacts,
     decisionBreakdown,
+  };
+}
+
+export function computeWorkshopAnalytics(
+  entries: LeaderboardEntry[],
+  workshopCode?: string
+): WorkshopAnalytics {
+  const normalizedCode = workshopCode?.trim().toUpperCase() ?? "";
+  const filtered = normalizedCode
+    ? entries.filter(
+        (e) => (e.workshopCode || "").trim().toUpperCase() === normalizedCode
+      )
+    : entries;
+
+  const totalRuns = filtered.length;
+  if (totalRuns === 0) {
+    return {
+      totalRuns: 0,
+      avgSimulationScore: 0,
+      avgPreTest: null,
+      avgPostTest: null,
+      topGaps: [],
+    };
+  }
+
+  const avgSimulationScore = Math.round(
+    filtered.reduce((sum, e) => sum + e.simulationScore, 0) / totalRuns
+  );
+
+  const preEntries = filtered.filter((e) => e.preTestScore !== null);
+  const avgPreTest =
+    preEntries.length > 0
+      ? Number(
+          (
+            preEntries.reduce((sum, e) => sum + (e.preTestScore ?? 0), 0) /
+            preEntries.length
+          ).toFixed(1)
+        )
+      : null;
+
+  const postEntries = filtered.filter((e) => e.postTestScore !== null);
+  const avgPostTest =
+    postEntries.length > 0
+      ? Number(
+          (
+            postEntries.reduce((sum, e) => sum + (e.postTestScore ?? 0), 0) /
+            postEntries.length
+          ).toFixed(1)
+        )
+      : null;
+
+  const gapCounts = new Map<PmbokDomain, number>();
+  for (const entry of preEntries) {
+    for (const domain of entry.gapsDetected ?? []) {
+      gapCounts.set(domain, (gapCounts.get(domain) ?? 0) + 1);
+    }
+  }
+
+  const topGaps = Array.from(gapCounts.entries())
+    .map(([domain, count]) => ({
+      domain,
+      count,
+      pct: Math.round((count / preEntries.length) * 100),
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  return {
+    totalRuns,
+    avgSimulationScore,
+    avgPreTest,
+    avgPostTest,
+    topGaps,
   };
 }

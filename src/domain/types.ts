@@ -99,6 +99,9 @@ export interface QuizResult {
 
 export interface GameState {
   participantName: string;
+  workshopCode: string;
+  workshopMode: boolean;
+  roundTimerSeconds: number | null;
   mode: ProjectMode | null;
   status: GameStatus;
   currentRoundIndex: number;
@@ -158,6 +161,7 @@ export interface FinalEvaluation {
 export interface LeaderboardEntry {
   id: string;
   participantName: string;
+  workshopCode: string;
   mode: ProjectMode;
   status: "victory" | "gameover";
   simulationScore: number;
@@ -165,8 +169,17 @@ export interface LeaderboardEntry {
   preTestScore: number | null;
   preTestLevel: KnowledgeLevel | null;
   postTestScore: number | null;
+  gapsDetected: PmbokDomain[];
   gapsClosed: number | null;
   totalGaps: number | null;
   indicators: GameIndicators;
   playedAt: string;
+}
+
+export interface WorkshopAnalytics {
+  totalRuns: number;
+  avgSimulationScore: number;
+  avgPreTest: number | null;
+  avgPostTest: number | null;
+  topGaps: { domain: PmbokDomain; count: number; pct: number }[];
 }

@@ -18,7 +18,12 @@ export default function HomePage() {
     currentScenario,
     evaluation,
     leaderboard,
+    isRemoteSyncEnabled,
     setParticipantName,
+    setWorkshopCode,
+    setWorkshopMode,
+    setRoundTimerSeconds,
+    refreshLeaderboard,
     startPreTest,
     completePreTest,
     beginSimulationFromPreTest,
@@ -89,8 +94,16 @@ export default function HomePage() {
     return (
       <StartScreen
         participantName={state.participantName}
+        workshopCode={state.workshopCode}
+        workshopMode={state.workshopMode}
+        roundTimerSeconds={state.roundTimerSeconds}
         leaderboard={leaderboard}
+        isRemoteSyncEnabled={isRemoteSyncEnabled}
         onChangeParticipantName={setParticipantName}
+        onChangeWorkshopCode={setWorkshopCode}
+        onChangeWorkshopMode={setWorkshopMode}
+        onChangeRoundTimer={setRoundTimerSeconds}
+        onRefreshLeaderboard={refreshLeaderboard}
         onStartWithPreTest={handleStartWithPreTest}
         onStartDirect={handleStartDirect}
         onClearLeaderboard={clearScores}
@@ -160,6 +173,8 @@ export default function HomePage() {
         indicators={state.indicators}
         lastDeltas={state.lastDeltas}
         muted={muted}
+        roundTimerSeconds={state.roundTimerSeconds}
+        isPlaying={!isFeedback}
         onToggleMute={handleToggleMute}
         onReset={resetGame}
       />
@@ -179,6 +194,7 @@ export default function HomePage() {
           round={currentScenario.round}
           options={currentScenario.options}
           selectedOptionId={isFeedback ? (state.lastOutcome?.id ?? null) : null}
+          hideHints={state.workshopMode}
           onSelect={handleChooseOption}
           onNextRound={handleNextRound}
         />

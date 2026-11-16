@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Clock,
   DollarSign,
   HeartHandshake,
   RotateCcw,
+  Timer,
   Users,
   Volume2,
   VolumeX,
@@ -19,6 +21,8 @@ interface HudPanelProps {
   indicators: GameIndicators;
   lastDeltas: GameIndicators | null;
   muted: boolean;
+  roundTimerSeconds?: number | null;
+  isPlaying?: boolean;
   onToggleMute: () => void;
   onReset: () => void;
 }
@@ -70,9 +74,37 @@ export function HudPanel({
   indicators,
   lastDeltas,
   muted,
+  roundTimerSeconds = null,
+  isPlaying = true,
   onToggleMute,
   onReset,
 }: HudPanelProps) {
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(
+    roundTimerSeconds
+  );
+
+  useEffect(() => {
+    setSecondsLeft(roundTimerSeconds);
+  }, [round, roundTimerSeconds]);
+
+  useEffect(() => {
+    if (!roundTimerSeconds || !isPlaying) return;
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev === null || prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [roundTimerSeconds, isPlaying, round]);
+
+  const formattedTimer =
+    secondsLeft !== null
+      ? `${String(Math.floor(secondsLeft / 60)).padStart(2, "0")}:${String(
+          secondsLeft % 60
+        ).padStart(2, "0")}`
+      : null;
+
   return (
     <header className="w-full border-b-2 border-zinc-800 bg-zinc-950/95 backdrop-blur-md">
       <div className="mx-auto max-w-5xl px-4 py-2.5 sm:px-6">
@@ -93,6 +125,19 @@ export function HudPanel({
           </div>
 
           <div className="flex items-center gap-2.5">
+            {formattedTimer && (
+              <div
+                className={`inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-0.5 font-mono text-xs font-bold tracking-wider ${
+                  secondsLeft !== null && secondsLeft <= 15
+                    ? "border-red-500/80 bg-red-950/60 text-red-300 animate-pulse"
+                    : "border-zinc-700 bg-zinc-900 text-cyan-300"
+                }`}
+                title="Temporizador de discusión de taller"
+              >
+                <Timer className="h-3.5 w-3.5" />
+                {formattedTimer}
+              </div>
+            )}
             <div className="rounded-sm border border-zinc-800 bg-zinc-900 px-2.5 py-0.5 font-mono text-xs font-bold tracking-widest text-zinc-200">
               PÁGINA{" "}
               <span className="text-amber-400">
