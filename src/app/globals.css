@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+.comic-page-bg {
+  background-color: #090b10;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 158, 11, 0.03), transparent 40%);
+  background-size: 18px 18px, 100% 100%;
+}
+
+/* Authentic Comic Book Vignette Frame */
+.comic-vignette {
+  border: 3px solid #000000;
+  outline: 2px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 6px 6px 0px #000000;
+}
+
+.comic-panel {
+  border: 2px solid #27272a;
+  box-shadow: 6px 6px 0px #000000;
+}
+
+.comic-panel-amber {
+  border: 2px solid #f59e0b;
+  box-shadow: 6px 6px 0px rgba(245, 158, 11, 0.28);
+}
+
+.comic-panel-cyan {
+  border: 2px solid #06b6d4;
+  box-shadow: 6px 6px 0px rgba(6, 182, 212, 0.28);
+}
+
+.comic-panel-red {
+  border: 2px solid #ef4444;
+  box-shadow: 6px 6px 0px rgba(239, 68, 68, 0.35);
+}
+
+/* Classic Comic Speech Bubble */
+.comic-speech-bubble {
+  position: relative;
+  background: #fafafa;
+  color: #09090b;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+}
+
+.comic-speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 14px solid #000000;
+}
+
+.comic-speech-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  border-left: 8px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 11px solid #fafafa;
+}
+
+/* Comic Narrator Box */
+.comic-narrator-box {
+  background: #fde047;
+  color: #09090b;
+  border: 2.5px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+/* Gainax / Manga Onomatopoeia SFX */
+.comic-sfx {
+  text-shadow:
+    -2px -2px 0 #000,
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000,
+     4px  4px 0 rgba(0, 0, 0, 0.85);
+}
+
+.scanlines-overlay {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.14) 3px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+}
+
+.speed-lines-overlay {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 255, 255, 0.035) 0deg 2deg,
+    transparent 2deg 8deg
+  );
+}
+
+.tactical-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
