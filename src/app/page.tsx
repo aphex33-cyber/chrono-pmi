@@ -5,6 +5,7 @@ import { useGameSimulation } from "@/application/useGameSimulation";
 import { ComicPage } from "@/components/ComicPage";
 import { DecisionOptions } from "@/components/DecisionOptions";
 import { HudPanel } from "@/components/HudPanel";
+import { QuizScreen } from "@/components/QuizScreen";
 import { ResultScreen } from "@/components/ResultScreen";
 import { StartScreen } from "@/components/StartScreen";
 import { DecisionOption, ProjectMode } from "@/domain/types";
@@ -16,10 +17,19 @@ export default function HomePage() {
     modeConfig,
     currentScenario,
     evaluation,
-    startGame,
+    leaderboard,
+    setParticipantName,
+    startPreTest,
+    completePreTest,
+    beginSimulationFromPreTest,
+    startGameDirect,
     chooseOption,
     nextRound,
+    startPostTest,
+    completePostTest,
+    returnToResultFromPostTest,
     resetGame,
+    clearScores,
   } = useGameSimulation();
 
   const [muted, setMuted] = useState(false);
@@ -31,9 +41,14 @@ export default function HomePage() {
     soundEngine.setMuted(nextMuted);
   };
 
-  const handleStartMode = (mode: ProjectMode) => {
+  const handleStartWithPreTest = (mode: ProjectMode) => {
     soundEngine.playPanelSlam();
-    startGame(mode);
+    startPreTest(mode);
+  };
+
+  const handleStartDirect = (mode: ProjectMode) => {
+    soundEngine.playPanelSlam();
+    startGameDirect(mode);
   };
 
   const handleChooseOption = (option: DecisionOption) => {
@@ -71,7 +86,47 @@ export default function HomePage() {
   }, [state.status, currentScenario]);
 
   if (state.status === "start" || !state.mode || !modeConfig) {
-    return <StartScreen onSelectMode={handleStartMode} />;
+    return (
+      <StartScreen
+        participantName={state.participantName}
+        leaderboard={leaderboard}
+        onChangeParticipantName={setParticipantName}
+        onStartWithPreTest={handleStartWithPreTest}
+        onStartDirect={handleStartDirect}
+        onClearLeaderboard={clearScores}
+      />
+    );
+  }
+
+  if (state.status === "pretest") {
+    return (
+      <QuizScreen
+        phase="pre"
+        mode={state.mode}
+        participantName={state.participantName}
+        preTestResult={state.preTestResult}
+        currentResult={state.preTestResult}
+        onSubmitQuiz={completePreTest}
+        onContinue={() => {
+          soundEngine.playPanelSlam();
+          beginSimulationFromPreTest();
+        }}
+      />
+    );
+  }
+
+  if (state.status === "posttest") {
+    return (
+      <QuizScreen
+        phase="post"
+        mode={state.mode}
+        participantName={state.participantName}
+        preTestResult={state.preTestResult}
+        currentResult={state.postTestResult}
+        onSubmitQuiz={completePostTest}
+        onContinue={returnToResultFromPostTest}
+      />
+    );
   }
 
   if (state.status === "victory" || state.status === "gameover") {
@@ -80,7 +135,8 @@ export default function HomePage() {
         state={state}
         mode={state.mode}
         evaluation={evaluation}
-        onRetrySameMode={() => handleStartMode(state.mode!)}
+        onRetrySameMode={() => handleStartDirect(state.mode!)}
+        onStartPostTest={startPostTest}
         onBackToStart={resetGame}
       />
     );
@@ -91,6 +147,9 @@ export default function HomePage() {
   }
 
   const isFeedback = state.status === "feedback";
+  const isGapTargeted = Boolean(
+    state.preTestResult?.gaps.includes(currentScenario.pmbokDomain)
+  );
 
   return (
     <div className="min-h-screen comic-page-bg flex flex-col">
@@ -112,6 +171,7 @@ export default function HomePage() {
           isFeedback={isFeedback}
           lastOutcome={state.lastOutcome}
           shakeTrigger={shakeTrigger}
+          isGapTargeted={isGapTargeted}
         />
 
         <DecisionOptions

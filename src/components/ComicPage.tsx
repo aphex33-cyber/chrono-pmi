@@ -9,6 +9,7 @@ interface ComicPageProps {
   isFeedback: boolean;
   lastOutcome: DecisionOption | null;
   shakeTrigger: number;
+  isGapTargeted?: boolean;
 }
 
 export function ComicPage({
@@ -17,6 +18,7 @@ export function ComicPage({
   isFeedback,
   lastOutcome,
   shakeTrigger,
+  isGapTargeted = false,
 }: ComicPageProps) {
   const isPrivate = mode === "private";
   const accentSfx = isPrivate ? "text-amber-400" : "text-cyan-400";
@@ -67,6 +69,11 @@ export function ComicPage({
             <span className="border-2 border-black bg-white px-2 py-0.5 font-mono text-[11px] font-black uppercase text-black shadow-[2px_2px_0px_#000]">
               {scenario.title}
             </span>
+            {isGapTargeted && (
+              <span className="border-2 border-black bg-rose-500 px-2 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-[2px_2px_0px_#000]">
+                🎯 BRECHA: {scenario.pmbokDomain}
+              </span>
+            )}
           </div>
 
           {/* Manga Onomatopoeia SFX */}

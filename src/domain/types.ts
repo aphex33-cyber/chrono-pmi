@@ -2,6 +2,20 @@ export type ProjectMode = "private" | "public";
 
 export type IndicatorKey = "budget" | "schedule" | "morale" | "stakeholders";
 
+export type PmbokDomain =
+  | "Principios y Valor"
+  | "Gobernanza y Cambios"
+  | "Alcance y EDT"
+  | "Cronograma y Línea Base"
+  | "Finanzas y Valor Ganado"
+  | "Interesados y Comunicaciones"
+  | "Recursos y Liderazgo"
+  | "Riesgos y Respuestas"
+  | "Enfoque Adaptativo"
+  | "Beneficios y Cierre";
+
+export type KnowledgeLevel = "Inicial" | "Intermedio" | "Avanzado";
+
 export interface GameIndicators {
   budget: number;
   schedule: number;
@@ -18,6 +32,7 @@ export interface DecisionOption {
   sfxWord: string;
   deltas: GameIndicators;
   outcomeNarrative: string;
+  /** Exact points out of 75 per round (8 rounds * 75 = 600 max) */
   pmiBestPracticeScore: number;
   pmiArea: string;
   pmiFeedback: string;
@@ -27,6 +42,7 @@ export interface Scenario {
   id: string;
   round: number;
   episodeCode: string;
+  pmbokDomain: PmbokDomain;
   title: string;
   sfxText: string;
   narratorBox: string;
@@ -40,13 +56,49 @@ export interface Scenario {
 export interface DecisionRecord {
   round: number;
   scenarioTitle: string;
+  pmbokDomain: PmbokDomain;
   chosenOption: DecisionOption;
   indicatorsAfter: GameIndicators;
 }
 
-export type GameStatus = "start" | "playing" | "feedback" | "victory" | "gameover";
+export type GameStatus =
+  | "start"
+  | "pretest"
+  | "playing"
+  | "feedback"
+  | "victory"
+  | "gameover"
+  | "posttest";
+
+export interface QuizQuestion {
+  id: string;
+  domain: PmbokDomain;
+  question: string;
+  options: [string, string, string, string];
+  correctIndex: number;
+  explanation: string;
+  bookRef: string;
+}
+
+export interface QuizAnswerRecord {
+  questionId: string;
+  domain: PmbokDomain;
+  selectedIndex: number;
+  correct: boolean;
+}
+
+export interface QuizResult {
+  phase: "pre" | "post";
+  score: number;
+  total: number;
+  level: KnowledgeLevel;
+  gaps: PmbokDomain[];
+  answers: QuizAnswerRecord[];
+  completedAt: string;
+}
 
 export interface GameState {
+  participantName: string;
   mode: ProjectMode | null;
   status: GameStatus;
   currentRoundIndex: number;
@@ -55,6 +107,8 @@ export interface GameState {
   lastOutcome: DecisionOption | null;
   failedIndicator: IndicatorKey | null;
   history: DecisionRecord[];
+  preTestResult: QuizResult | null;
+  postTestResult: QuizResult | null;
 }
 
 export interface ModeConfig {
@@ -68,17 +122,51 @@ export interface ModeConfig {
   accentColor: string;
 }
 
+export interface VariableImpactReport {
+  key: IndicatorKey;
+  label: string;
+  initialValue: number;
+  finalValue: number;
+  netDelta: number;
+  assessment: string;
+  keyDrivers: { round: number; label: string; delta: number }[];
+}
+
 export interface FinalEvaluation {
+  decisionPointsTotal: number;
+  decisionPointsMax: number;
+  indicatorHealthTotal: number;
+  indicatorHealthMax: number;
   totalScore: number;
   grade: "S" | "A" | "B" | "C";
   title: string;
   summary: string;
   strengths: string[];
   improvements: string[];
+  variableImpacts: VariableImpactReport[];
   decisionBreakdown: {
     round: number;
+    scenarioTitle: string;
+    domain: PmbokDomain;
     area: string;
     feedback: string;
     score: number;
+    maxScore: number;
   }[];
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  participantName: string;
+  mode: ProjectMode;
+  status: "victory" | "gameover";
+  simulationScore: number;
+  grade: "S" | "A" | "B" | "C" | "F";
+  preTestScore: number | null;
+  preTestLevel: KnowledgeLevel | null;
+  postTestScore: number | null;
+  gapsClosed: number | null;
+  totalGaps: number | null;
+  indicators: GameIndicators;
+  playedAt: string;
 }
