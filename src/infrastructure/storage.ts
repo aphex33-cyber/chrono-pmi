@@ -4,8 +4,11 @@ const PARTICIPANT_KEY = "chrono_pmi_participant_v1";
 const WORKSHOP_CODE_KEY = "chrono_pmi_workshop_code_v1";
 const LEADERBOARD_KEY = "chrono_pmi_leaderboard_v1";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+const RAW_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const SUPABASE_URL = RAW_SUPABASE_URL.trim()
+  .replace(/\/+$/, "")
+  .replace(/\/rest\/v1$/i, "");
+const SUPABASE_ANON_KEY = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
