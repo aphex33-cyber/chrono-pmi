@@ -37,25 +37,36 @@ export function ResultScreen({
       <div className="min-h-screen tactical-grid flex items-center justify-center px-4 py-8 sm:px-6">
         <div className="w-full max-w-4xl space-y-6">
           <div className="comic-panel-red overflow-hidden rounded-sm bg-zinc-950">
-            <div className="relative aspect-[16/7] w-full overflow-hidden">
+            <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/7]">
               <img
                 src="/images/gameover.jpg"
                 alt="Proyecto fracasado en sala de mando"
                 className="h-full w-full object-cover object-center"
               />
               <div className="scanlines-overlay pointer-events-none absolute inset-0" />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/65 to-transparent" />
+              <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/65 to-transparent" />
 
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+              <div className="hidden sm:block absolute bottom-0 left-0 right-0 p-8">
                 <div className="inline-flex items-center gap-2 border border-red-500/70 bg-red-500/20 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-red-300">
                   <AlertTriangle className="h-4 w-4" />
                   TERMINACIÓN ANTICIPADA // RONDA 0{state.currentRoundIndex + 1}
                 </div>
-                <h1 className="mt-3 text-3xl font-black uppercase tracking-tight text-white sm:text-5xl">
+                <h1 className="mt-3 text-5xl font-black uppercase tracking-tight text-white">
                   Proyecto Fracasado /{" "}
                   <span className="text-red-500">Cancelado</span>
                 </h1>
               </div>
+            </div>
+
+            <div className="border-t border-zinc-800 px-6 pt-5 sm:hidden">
+              <div className="inline-flex items-center gap-2 border border-red-500/70 bg-red-500/20 px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-red-300">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                TERMINACIÓN // RONDA 0{state.currentRoundIndex + 1}
+              </div>
+              <h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">
+                Proyecto Fracasado /{" "}
+                <span className="text-red-500">Cancelado</span>
+              </h1>
             </div>
 
             <div className="space-y-5 p-6 sm:p-8">
@@ -106,22 +117,22 @@ export function ResultScreen({
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Victory Hero Banner */}
         <div className="comic-panel-amber overflow-hidden rounded-sm bg-zinc-950">
-          <div className="relative aspect-[16/7] w-full overflow-hidden">
+          <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/7]">
             <img
               src="/images/victory.jpg"
               alt="Equipo celebrando proyecto exitoso estilo Gainax"
               className="h-full w-full object-cover object-center"
             />
             <div className="scanlines-overlay pointer-events-none absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+            <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
 
-            <div className="absolute bottom-0 left-0 right-0 flex flex-wrap items-end justify-between gap-4 p-6 sm:p-8">
+            <div className="hidden sm:flex absolute bottom-0 left-0 right-0 flex-wrap items-end justify-between gap-4 p-8">
               <div>
                 <div className="inline-flex items-center gap-2 border border-emerald-400/60 bg-emerald-500/20 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-emerald-300">
                   <Award className="h-4 w-4" />
                   5 RONDAS COMPLETADAS // CIERRE EXITOSO
                 </div>
-                <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-5xl">
+                <h1 className="mt-2 text-5xl font-black tracking-tight text-white">
                   ¡Proyecto <span className="text-amber-400">Exitoso</span>!
                 </h1>
                 <p className="mt-1 font-mono text-sm text-amber-300">
@@ -143,6 +154,29 @@ export function ResultScreen({
                 <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-amber-400 font-mono text-2xl font-black text-zinc-950">
                   {evaluation.grade}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 border-t border-zinc-800 px-6 pt-5 sm:hidden">
+            <div className="inline-flex items-center gap-2 border border-emerald-400/60 bg-emerald-500/20 px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-300">
+              <Award className="h-3.5 w-3.5" />
+              5 RONDAS COMPLETADAS
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-white">
+              ¡Proyecto <span className="text-amber-400">Exitoso</span>!
+            </h1>
+            <div className="flex items-center justify-between rounded-sm border-2 border-amber-400 bg-zinc-900 px-4 py-2.5">
+              <div>
+                <p className="font-mono text-[10px] uppercase text-zinc-400">
+                  {evaluation.title}
+                </p>
+                <p className="font-mono text-xl font-black text-white">
+                  {evaluation.totalScore} / 1000
+                </p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-amber-400 font-mono text-xl font-black text-zinc-950">
+                {evaluation.grade}
               </div>
             </div>
           </div>

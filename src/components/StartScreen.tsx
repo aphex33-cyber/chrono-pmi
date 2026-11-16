@@ -26,23 +26,23 @@ export function StartScreen({ onSelectMode }: StartScreenProps) {
 
         {/* Hero Comic Cover Panel */}
         <div className="comic-panel relative overflow-hidden rounded-sm bg-zinc-950">
-          <div className="relative aspect-[16/7] w-full overflow-hidden">
+          <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/7]">
             <img
               src="/images/cover.jpg"
               alt="Director de proyectos en centro de mando táctico estilo anime Gainax"
               className="h-full w-full object-cover object-center"
             />
             <div className="scanlines-overlay pointer-events-none absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+            <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
 
-            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
+            <div className="hidden sm:block absolute bottom-0 left-0 right-0 p-8">
               <div className="inline-block border border-amber-500/60 bg-amber-500/15 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-widest text-amber-300 backdrop-blur-sm">
                 SISTEMA TÁCTICO MAGI // MODO SIMULACIÓN
               </div>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-5xl">
+              <h1 className="mt-2 text-5xl font-black tracking-tight text-white">
                 CHRONO<span className="text-amber-400">-PMI</span>
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-200 sm:text-base">
+              <p className="mt-2 max-w-2xl text-base leading-relaxed text-zinc-200">
                 Asume el mando de un proyecto de alto riesgo en 5 rondas críticas.
                 Cada decisión impacta tu{" "}
                 <span className="font-semibold text-amber-300">Presupuesto</span>,{" "}
@@ -52,6 +52,24 @@ export function StartScreen({ onSelectMode }: StartScreenProps) {
                 Si un indicador llega a cero, el proyecto es cancelado.
               </p>
             </div>
+          </div>
+
+          {/* Mobile Hero Text (keeps 16:9 image uncropped on small screens) */}
+          <div className="border-t border-zinc-800 p-4 sm:hidden">
+            <div className="inline-block border border-amber-500/60 bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-widest text-amber-300">
+              SISTEMA TÁCTICO MAGI // MODO SIMULACIÓN
+            </div>
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-white">
+              CHRONO<span className="text-amber-400">-PMI</span>
+            </h1>
+            <p className="mt-1.5 text-sm leading-relaxed text-zinc-200">
+              Asume el mando de un proyecto en 5 rondas críticas. Cada decisión
+              impacta tu{" "}
+              <span className="font-semibold text-amber-300">Presupuesto</span>,{" "}
+              <span className="font-semibold text-cyan-300">Cronograma</span>,{" "}
+              <span className="font-semibold text-emerald-300">Moral</span> y{" "}
+              <span className="font-semibold text-violet-300">Stakeholders</span>.
+            </p>
           </div>
         </div>
 
