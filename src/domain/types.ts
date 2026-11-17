@@ -113,6 +113,9 @@ export interface GameState {
   lastOutcome: DecisionOption | null;
   failedIndicator: IndicatorKey | null;
   history: DecisionRecord[];
+  activeScenarios: Scenario[];
+  preTestQuestions: QuizQuestion[];
+  postTestQuestions: QuizQuestion[];
   preTestResult: QuizResult | null;
   postTestResult: QuizResult | null;
 }

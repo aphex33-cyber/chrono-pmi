@@ -40,6 +40,7 @@ interface StartScreenProps {
   onRefreshLeaderboard: () => Promise<void>;
   onStartWithPreTest: (mode: ProjectMode, level: DifficultyLevel) => void;
   onStartDirect: (mode: ProjectMode, level: DifficultyLevel) => void;
+  onOpenMission: () => void;
   onClearLeaderboard: () => void;
 }
 
@@ -59,6 +60,7 @@ export function StartScreen({
   onRefreshLeaderboard,
   onStartWithPreTest,
   onStartDirect,
+  onOpenMission,
   onClearLeaderboard,
 }: StartScreenProps) {
   const [selectedMode, setSelectedMode] = useState<ProjectMode>("public");
@@ -104,13 +106,24 @@ export function StartScreen({
   return (
     <div className="min-h-screen tactical-grid flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl space-y-5">
-        {/* Compact Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5 font-mono text-xs uppercase tracking-widest text-zinc-400">
-          <span className="flex items-center gap-2 text-amber-400">
-            <Sparkles className="h-3.5 w-3.5" />
-            CHRONO-PMI // SIMULADOR PMBOK® v8
+        {/* Top Hub Switcher: PMind Arena vs PMind Mission */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-sm border-2 border-amber-400 bg-amber-400 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-zinc-950">
+              <Sparkles className="h-3.5 w-3.5" />
+              PMind Arena
+            </span>
+            <button
+              type="button"
+              onClick={onOpenMission}
+              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-cyan-500/60 bg-cyan-950/40 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-cyan-300 transition-colors hover:border-cyan-400 hover:bg-cyan-400 hover:text-zinc-950 cursor-pointer"
+            >
+              🚀 PMind Mission (2045 Lunar)
+            </button>
+          </div>
+          <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-400">
+            PMBOK® v8 • 3 NIVELES • 20p PRE/POST
           </span>
-          <span>3 NIVELES • 8 RONDAS POR NIVEL</span>
         </div>
 
         {/* Compact Hero Banner */}
@@ -317,7 +330,7 @@ export function StartScreen({
               className="flex items-center justify-center gap-2 rounded-sm border-2 border-zinc-700 bg-zinc-900 px-5 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-200 transition-colors hover:border-amber-400 hover:text-amber-300 cursor-pointer"
             >
               <ClipboardCheck className="h-4 w-4" />
-              <span>Hacer Diagnóstico Previo (10p)</span>
+              <span>Hacer Diagnóstico Previo (20p)</span>
             </button>
           </div>
         </div>
@@ -459,8 +472,8 @@ export function StartScreen({
                   <div className="rounded-sm border border-zinc-800 bg-zinc-900 p-3">
                     <p className="text-[11px] text-zinc-400">Pre vs Post Grupo</p>
                     <p className="mt-1 text-base font-black text-cyan-300">
-                      {analytics.avgPreTest !== null ? `${analytics.avgPreTest}/10` : "—"} →{" "}
-                      {analytics.avgPostTest !== null ? `${analytics.avgPostTest}/10` : "—"}
+                      {analytics.avgPreTest !== null ? `${analytics.avgPreTest}/20` : "—"} →{" "}
+                      {analytics.avgPostTest !== null ? `${analytics.avgPostTest}/20` : "—"}
                     </p>
                   </div>
                   <div className="rounded-sm border border-zinc-800 bg-zinc-900 p-3">
@@ -518,7 +531,7 @@ export function StartScreen({
                           </td>
                           <td className="py-2 pr-3">
                             {entry.preTestScore !== null
-                              ? `${entry.preTestScore}/10`
+                              ? `${entry.preTestScore}/20`
                               : "—"}
                           </td>
                           <td className="py-2 pr-3 font-bold text-white">
@@ -526,7 +539,7 @@ export function StartScreen({
                           </td>
                           <td className="py-2 pr-3">
                             {entry.postTestScore !== null
-                              ? `${entry.postTestScore}/10`
+                              ? `${entry.postTestScore}/20`
                               : "—"}
                           </td>
                           <td className="py-2">

@@ -1,4 +1,5 @@
 import { LEVEL_CONFIGS, MODE_CONFIGS, PRIVATE_SCENARIOS, PUBLIC_SCENARIOS } from "./scenarios";
+import { PRIVATE_EXTRA_SCENARIOS, PUBLIC_EXTRA_SCENARIOS } from "./scenariosExtra";
 import { PRIVATE_LEVEL2_SCENARIOS, PUBLIC_LEVEL2_SCENARIOS } from "./scenariosLevel2";
 import { PRIVATE_LEVEL3_SCENARIOS, PUBLIC_LEVEL3_SCENARIOS } from "./scenariosLevel3";
 import {
@@ -51,6 +52,56 @@ export function getScenariosForMode(
   return mode === "private" ? PRIVATE_SCENARIOS : PUBLIC_SCENARIOS;
 }
 
+function seededShuffleScenarios<T>(items: T[], seed: number): T[] {
+  const arr = [...items];
+  let s = seed >>> 0;
+  const nextRand = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(nextRand() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+export function selectArenaScenariosForRun(
+  mode: ProjectMode,
+  level: DifficultyLevel = 1,
+  gaps: PmbokDomain[] = [],
+  seed = Date.now()
+): Scenario[] {
+  if (level === 3) {
+    // Level 3 is a chronological end-to-end project (Inicio -> Cierre)
+    return getScenariosForMode(mode, 3);
+  }
+
+  const base = getScenariosForMode(mode, level);
+  const extra = mode === "private" ? PRIVATE_EXTRA_SCENARIOS : PUBLIC_EXTRA_SCENARIOS;
+  const pool = [...base, ...extra];
+  const gapSet = new Set(gaps);
+
+  const gapMatches = seededShuffleScenarios(
+    pool.filter((s) => gapSet.has(s.pmbokDomain)),
+    seed + 11
+  );
+  const nonMatches = seededShuffleScenarios(
+    pool.filter((s) => !gapSet.has(s.pmbokDomain)),
+    seed + 29
+  );
+
+  // Prioritize gap-targeted scenarios, then fill remaining rounds randomly
+  const combined = [...gapMatches, ...nonMatches].slice(0, TOTAL_ROUNDS);
+  const finalOrder =
+    gaps.length > 0 ? combined : seededShuffleScenarios(combined, seed + 53);
+
+  return finalOrder.map((sc, idx) => ({
+    ...sc,
+    round: idx + 1,
+  }));
+}
+
 export function createInitialGameState(
   mode: ProjectMode | null = null,
   participantName = "",
@@ -77,6 +128,9 @@ export function createInitialGameState(
     lastOutcome: null,
     failedIndicator: null,
     history: [],
+    activeScenarios: mode ? selectArenaScenariosForRun(mode, level) : [],
+    preTestQuestions: [],
+    postTestQuestions: [],
     preTestResult: null,
     postTestResult: null,
   };

@@ -5,6 +5,7 @@ import { useGameSimulation } from "@/application/useGameSimulation";
 import { ComicPage } from "@/components/ComicPage";
 import { DecisionOptions } from "@/components/DecisionOptions";
 import { HudPanel } from "@/components/HudPanel";
+import { MissionHub } from "@/components/MissionHub";
 import { QuizScreen } from "@/components/QuizScreen";
 import { ResultScreen } from "@/components/ResultScreen";
 import { StartScreen } from "@/components/StartScreen";
@@ -39,6 +40,7 @@ export default function HomePage() {
 
   const [muted, setMuted] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
+  const [appSection, setAppSection] = useState<"arena" | "mission">("arena");
 
   const handleToggleMute = () => {
     const nextMuted = !muted;
@@ -90,6 +92,15 @@ export default function HomePage() {
     }
   }, [state.status, currentScenario]);
 
+  if (appSection === "mission") {
+    return (
+      <MissionHub
+        initialDirectorName={state.participantName}
+        onBackToArena={() => setAppSection("arena")}
+      />
+    );
+  }
+
   if (state.status === "start" || !state.mode || !modeConfig) {
     return (
       <StartScreen
@@ -106,6 +117,7 @@ export default function HomePage() {
         onRefreshLeaderboard={refreshLeaderboard}
         onStartWithPreTest={handleStartWithPreTest}
         onStartDirect={handleStartDirect}
+        onOpenMission={() => setAppSection("mission")}
         onClearLeaderboard={clearScores}
       />
     );
@@ -117,6 +129,7 @@ export default function HomePage() {
         phase="pre"
         mode={state.mode}
         participantName={state.participantName}
+        questions={state.preTestQuestions}
         preTestResult={state.preTestResult}
         currentResult={state.preTestResult}
         onSubmitQuiz={completePreTest}
@@ -134,6 +147,7 @@ export default function HomePage() {
         phase="post"
         mode={state.mode}
         participantName={state.participantName}
+        questions={state.postTestQuestions}
         preTestResult={state.preTestResult}
         currentResult={state.postTestResult}
         onSubmitQuiz={completePostTest}

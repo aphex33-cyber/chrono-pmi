@@ -10,13 +10,13 @@ import {
   TrendingUp,
   XCircle,
 } from "lucide-react";
-import { POST_TEST_QUESTIONS, PRE_TEST_QUESTIONS } from "@/domain/quiz";
-import { ProjectMode, QuizResult } from "@/domain/types";
+import { ProjectMode, QuizQuestion, QuizResult } from "@/domain/types";
 
 interface QuizScreenProps {
   phase: "pre" | "post";
   mode: ProjectMode;
   participantName: string;
+  questions: QuizQuestion[];
   preTestResult: QuizResult | null;
   currentResult: QuizResult | null;
   onSubmitQuiz: (selectedIndices: number[]) => void;
@@ -27,12 +27,12 @@ export function QuizScreen({
   phase,
   mode,
   participantName,
+  questions,
   preTestResult,
   currentResult,
   onSubmitQuiz,
   onContinue,
 }: QuizScreenProps) {
-  const questions = phase === "pre" ? PRE_TEST_QUESTIONS : POST_TEST_QUESTIONS;
   const [answers, setAnswers] = useState<number[]>(() =>
     Array(questions.length).fill(-1)
   );
@@ -60,9 +60,12 @@ export function QuizScreen({
   if (currentResult) {
     const preScore = preTestResult?.score ?? null;
     const postScore = currentResult.score;
+    const preTotal = preTestResult?.total ?? questions.length;
     const improvementPct =
       phase === "post" && preScore !== null
-        ? Math.round(((postScore - preScore) / questions.length) * 100)
+        ? Math.round(
+            ((postScore / questions.length) - (preScore / preTotal)) * 100
+          )
         : null;
 
     return (
@@ -111,7 +114,9 @@ export function QuizScreen({
                   </p>
                 ) : (
                   <p className="mt-1 font-mono text-xl font-black text-white">
-                    {preScore !== null ? `${preScore}/10 → ${postScore}/10` : `${postScore}/10`}
+                    {preScore !== null
+                      ? `${preScore}/${preTotal} → ${postScore}/${questions.length}`
+                      : `${postScore}/${questions.length}`}
                     {improvementPct !== null && (
                       <span
                         className={`ml-2 text-sm ${
@@ -284,7 +289,7 @@ export function QuizScreen({
               : "MÓDULO FINAL // TEST DE SALIDA PMBOK® v8"}
           </span>
           <span>
-            PREGUNTA {String(activeIndex + 1).padStart(2, "0")} / 10
+            PREGUNTA {String(activeIndex + 1).padStart(2, "0")} / {questions.length}
           </span>
         </div>
 
@@ -389,7 +394,7 @@ export function QuizScreen({
               <span>
                 {allAnswered
                   ? "Evaluar Respuestas"
-                  : `Responde todas (${answeredCount}/10)`}
+                  : `Responde todas (${answeredCount}/${questions.length})`}
               </span>
               <ArrowRight className="h-4 w-4" />
             </button>

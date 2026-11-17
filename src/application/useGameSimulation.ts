@@ -6,12 +6,12 @@ import {
   applyDecisionToState,
   createInitialGameState,
   evaluatePerformance,
-  getScenariosForMode,
+  selectArenaScenariosForRun,
 } from "@/domain/engine";
 import {
-  POST_TEST_QUESTIONS,
-  PRE_TEST_QUESTIONS,
   evaluateQuiz,
+  selectPostTestQuestions,
+  selectPreTestQuestions,
 } from "@/domain/quiz";
 import { LEVEL_CONFIGS, MODE_CONFIGS } from "@/domain/scenarios";
 import {
@@ -129,6 +129,7 @@ export function useGameSimulation(): UseGameSimulationResult {
       setCurrentRunId(
         `run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       );
+      const questions = selectPreTestQuestions(20, Date.now());
       setState((prev) => ({
         ...createInitialGameState(
           null,
@@ -141,6 +142,7 @@ export function useGameSimulation(): UseGameSimulationResult {
         mode,
         level,
         status: "pretest",
+        preTestQuestions: questions,
         indicators: { ...LEVEL_CONFIGS[level].initialIndicators },
       }));
     },
@@ -148,20 +150,29 @@ export function useGameSimulation(): UseGameSimulationResult {
   );
 
   const completePreTest = useCallback((selectedIndices: number[]) => {
-    const result = evaluateQuiz("pre", PRE_TEST_QUESTIONS, selectedIndices);
-    setState((prev) => ({
-      ...prev,
-      preTestResult: result,
-    }));
+    setState((prev) => {
+      const result = evaluateQuiz("pre", prev.preTestQuestions, selectedIndices);
+      return {
+        ...prev,
+        preTestResult: result,
+      };
+    });
   }, []);
 
   const beginSimulationFromPreTest = useCallback(() => {
     setState((prev) => {
       if (!prev.mode) return prev;
+      const scenarios = selectArenaScenariosForRun(
+        prev.mode,
+        prev.level,
+        prev.preTestResult?.gaps ?? [],
+        Date.now()
+      );
       return {
         ...prev,
         status: "playing",
         currentRoundIndex: 0,
+        activeScenarios: scenarios,
         indicators: { ...LEVEL_CONFIGS[prev.level].initialIndicators },
         lastDeltas: null,
         lastOutcome: null,
@@ -199,9 +210,8 @@ export function useGameSimulation(): UseGameSimulationResult {
 
   const currentScenario = useMemo<Scenario | null>(() => {
     if (!state.mode) return null;
-    const scenarios = getScenariosForMode(state.mode, state.level);
-    return scenarios[state.currentRoundIndex] ?? null;
-  }, [state.mode, state.level, state.currentRoundIndex]);
+    return state.activeScenarios[state.currentRoundIndex] ?? null;
+  }, [state.mode, state.activeScenarios, state.currentRoundIndex]);
 
   const persistRunToLeaderboard = useCallback(
     (nextState: GameState) => {
@@ -286,13 +296,22 @@ export function useGameSimulation(): UseGameSimulationResult {
     setState((prev) => ({
       ...prev,
       status: "posttest",
+      postTestQuestions: selectPostTestQuestions(
+        prev.preTestResult?.gaps ?? [],
+        20,
+        Date.now()
+      ),
     }));
   }, []);
 
   const completePostTest = useCallback(
     (selectedIndices: number[]) => {
-      const result = evaluateQuiz("post", POST_TEST_QUESTIONS, selectedIndices);
       setState((prev) => {
+        const result = evaluateQuiz(
+          "post",
+          prev.postTestQuestions,
+          selectedIndices
+        );
         const updated: GameState = {
           ...prev,
           postTestResult: result,

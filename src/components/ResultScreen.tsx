@@ -115,7 +115,7 @@ export function ResultScreen({
                   className="inline-flex items-center gap-2 rounded-sm border border-amber-400/60 bg-amber-500/15 px-5 py-3 font-mono text-xs font-bold uppercase tracking-wider text-amber-300 transition-colors hover:bg-amber-500/25 cursor-pointer"
                 >
                   <ClipboardCheck className="h-4 w-4" />
-                  Realizar Test de Salida (10p)
+                  Realizar Test de Salida (20p)
                 </button>
                 <button
                   type="button"
@@ -340,8 +340,8 @@ export function ResultScreen({
                 </h2>
                 <p className="mt-2 font-mono text-sm text-white">
                   {state.preTestResult
-                    ? `Pre-Test: ${state.preTestResult.score}/10 (${state.preTestResult.level}) → Test de Salida: ${state.postTestResult.score}/10 (${state.postTestResult.level})`
-                    : `Test de Salida: ${state.postTestResult.score}/10 (${state.postTestResult.level})`}
+                    ? `Pre-Test: ${state.preTestResult.score}/${state.preTestResult.total} (${state.preTestResult.level}) → Test de Salida: ${state.postTestResult.score}/${state.postTestResult.total} (${state.postTestResult.level})`
+                    : `Test de Salida: ${state.postTestResult.score}/${state.postTestResult.total} (${state.postTestResult.level})`}
                 </p>
               </div>
             )}
@@ -436,8 +436,8 @@ export function ResultScreen({
               >
                 <ClipboardCheck className="h-4 w-4" />
                 {state.postTestResult
-                  ? "Ver / Repetir Test de Salida (10p)"
-                  : "Realizar Test de Salida y Comparar Brechas"}
+                  ? "Ver / Repetir Test de Salida (20p)"
+                  : "Realizar Test de Salida (20p)"}
               </button>
               <button
                 type="button"
