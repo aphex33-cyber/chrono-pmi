@@ -105,6 +105,7 @@ export interface MissionStageConfig {
   code: string;
   title: string;
   pmbokFocus: string;
+  imagePath: string;
   objectives: string[];
   deliverablesChecklist: string[];
   docFields: MissionDocField[];

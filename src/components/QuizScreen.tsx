@@ -71,7 +71,7 @@ export function QuizScreen({
     return (
       <div className="min-h-screen tactical-grid px-4 py-8 sm:px-6">
         <div className="mx-auto max-w-4xl space-y-6">
-          <div className="comic-panel rounded-sm bg-zinc-950 p-6 sm:p-8">
+          <div className="comic-panel rounded-2xl p-6 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
               <div>
                 <p className={`font-mono text-xs font-bold uppercase tracking-widest ${accentText}`}>
@@ -293,7 +293,7 @@ export function QuizScreen({
           </span>
         </div>
 
-        <div className="comic-panel rounded-sm bg-zinc-950 p-6 sm:p-8">
+        <div className="comic-panel rounded-2xl p-6 sm:p-8">
           {/* Progress dots */}
           <div className="mb-5 flex flex-wrap gap-1.5">
             {questions.map((q, idx) => {

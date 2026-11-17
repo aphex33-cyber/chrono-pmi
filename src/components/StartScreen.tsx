@@ -106,17 +106,17 @@ export function StartScreen({
   return (
     <div className="min-h-screen tactical-grid flex flex-col items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl space-y-5">
-        {/* Top Hub Switcher: PMind Arena vs PMind Mission */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+        {/* SaaS Top Hub Switcher: PMind Arena vs PMind Mission */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-zinc-950/80 px-4 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-sm border-2 border-amber-400 bg-amber-400 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-zinc-950">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-300 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-zinc-950 shadow-[0_0_20px_-4px_rgba(245,158,11,0.45)]">
               <Sparkles className="h-3.5 w-3.5" />
               PMind Arena
             </span>
             <button
               type="button"
               onClick={onOpenMission}
-              className="inline-flex items-center gap-1.5 rounded-sm border-2 border-cyan-500/60 bg-cyan-950/40 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-cyan-300 transition-colors hover:border-cyan-400 hover:bg-cyan-400 hover:text-zinc-950 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-cyan-300 transition-all hover:border-cyan-400 hover:bg-cyan-400 hover:text-zinc-950 cursor-pointer"
             >
               🚀 PMind Mission (2045 Lunar)
             </button>
@@ -127,7 +127,7 @@ export function StartScreen({
         </div>
 
         {/* Compact Hero Banner */}
-        <div className="comic-panel relative overflow-hidden rounded-sm bg-zinc-950">
+        <div className="comic-panel relative overflow-hidden rounded-2xl">
           <div className="relative aspect-[16/6] w-full overflow-hidden sm:aspect-[16/5]">
             <img
               src="/images/cover.jpg"
@@ -153,7 +153,7 @@ export function StartScreen({
         </div>
 
         {/* Simple 3-Step Setup Card */}
-        <div className="comic-panel rounded-sm bg-zinc-950/95 p-5 sm:p-6 space-y-6">
+        <div className="comic-panel rounded-2xl p-5 sm:p-7 space-y-6">
           {/* STEP 1: Name */}
           <div>
             <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
@@ -309,14 +309,14 @@ export function StartScreen({
           </div>
 
           {/* Primary Launch Actions */}
-          <div className="flex flex-col gap-3 border-t border-zinc-800 pt-5 sm:flex-row">
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row">
             <button
               type="button"
               onClick={() => handleLaunch(false)}
-              className={`flex flex-1 items-center justify-center gap-2.5 rounded-sm border-2 border-black px-6 py-3.5 font-mono text-sm font-black uppercase tracking-wider text-zinc-950 shadow-[4px_4px_0px_#000] transition-colors cursor-pointer ${
+              className={`flex flex-1 items-center justify-center gap-2.5 rounded-xl px-6 py-3.5 font-mono text-sm font-black uppercase tracking-wider text-zinc-950 shadow-lg transition-all hover:brightness-105 cursor-pointer ${
                 isPrivate
-                  ? "bg-amber-400 hover:bg-amber-300"
-                  : "bg-cyan-400 hover:bg-cyan-300"
+                  ? "bg-gradient-to-r from-amber-400 to-amber-300 shadow-[0_12px_28px_-8px_rgba(245,158,11,0.5)]"
+                  : "bg-gradient-to-r from-cyan-400 to-sky-400 shadow-[0_12px_28px_-8px_rgba(6,182,212,0.5)]"
               }`}
             >
               <Play className="h-4 w-4 fill-current" />
@@ -327,7 +327,7 @@ export function StartScreen({
             <button
               type="button"
               onClick={() => handleLaunch(true)}
-              className="flex items-center justify-center gap-2 rounded-sm border-2 border-zinc-700 bg-zinc-900 px-5 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-200 transition-colors hover:border-amber-400 hover:text-amber-300 cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-zinc-900/80 px-5 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-200 transition-colors hover:border-amber-400/60 hover:text-amber-300 cursor-pointer"
             >
               <ClipboardCheck className="h-4 w-4" />
               <span>Hacer Diagnóstico Previo (20p)</span>
@@ -336,7 +336,7 @@ export function StartScreen({
         </div>
 
         {/* Collapsible Facilitator & Leaderboard Drawer */}
-        <div className="comic-panel rounded-sm bg-zinc-950/95">
+        <div className="comic-panel rounded-2xl">
           <button
             type="button"
             onClick={() => setShowWorkshopPanel((v) => !v)}

@@ -45,7 +45,7 @@ export function ResultScreen({
     return (
       <div className="min-h-screen tactical-grid flex items-center justify-center px-4 py-8 sm:px-6">
         <div className="w-full max-w-4xl space-y-6">
-          <div className="comic-panel-red overflow-hidden rounded-sm bg-zinc-950">
+          <div className="comic-panel-red overflow-hidden rounded-2xl">
             <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/7]">
               <img
                 src="/images/gameover.jpg"
@@ -137,7 +137,7 @@ export function ResultScreen({
     <div className="min-h-screen tactical-grid px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Victory Hero Banner */}
-        <div className="comic-panel-amber overflow-hidden rounded-sm bg-zinc-950">
+        <div className="comic-panel-amber overflow-hidden rounded-2xl">
           <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/7]">
             <img
               src="/images/victory.jpg"

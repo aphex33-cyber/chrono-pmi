@@ -45,6 +45,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 01",
     title: "Iniciación y Autorización Estratégica",
     pmbokFocus: "Caso de Negocios, Beneficios, Acta de Constitución e Interesados (Cap. 4)",
+    imagePath: "/images/mission-stage1.jpg",
     objectives: [
       "Comparar alternativas de negocio (VAN, riesgo y valor estratégico).",
       "Definir el Plan de Gestión de Beneficios y construir el Acta de Constitución.",
@@ -138,6 +139,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 02",
     title: "Planificación Integral y Líneas Base",
     pmbokFocus: "EDT, Ruta Crítica, Presupuesto + Reservas, Riesgos y Adquisiciones (Cap. 5–11)",
+    imagePath: "/images/mission-stage2.jpg",
     objectives: [
       "Estructurar la EDT al 100% de entregables y definir dependencias en Ruta Crítica (36 meses).",
       "Separar Línea Base de Costos ($440M) + Reserva de Contingencia ($40M) + Reserva de Gestión ($20M) = $500M.",
@@ -232,6 +234,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 03",
     title: "Ejecución, Equipos y Proveedores",
     pmbokFocus: "Liderazgo, Gestión de Conocimiento, Calidad y Adquisiciones (Cap. 12)",
+    imagePath: "/images/mission-stage3.jpg",
     objectives: [
       "Gestionar contratación, avance de paquetes de trabajo y entregas de proveedores.",
       "Resolver conflictos internos entre Ingeniería y Finanzas manteniendo moral y calidad.",
@@ -326,6 +329,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 04",
     title: "Control Transversal, EVM y Cambios",
     pmbokFocus: "Valor Ganado (EVM), CCB, Pronóstico EAC y Monitoreo de Riesgos (Cap. 13)",
+    imagePath: "/images/mission-stage4.jpg",
     objectives: [
       "Calcular CPI, SPI y EAC reales para detectar desviaciones acumuladas.",
       "Evaluar solicitudes de cambio en el CCB protegiendo seguridad, valor y reservas.",
@@ -421,6 +425,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 05",
     title: "Compuerta de Lanzamiento (Go / No-Go)",
     pmbokFocus: "Revisión de Seguridad, Calidad, Ética y Decisión Go/No-Go (Cap. 5.4 / 13.4)",
+    imagePath: "/images/mission-stage5.jpg",
     objectives: [
       "Auditar criterios de seguridad CIS, calidad técnica y cumplimiento regulatorio ARLI.",
       "Tomar la decisión Go, Aplazar para Corrección, o No-Go / Detención Justificada.",
@@ -509,6 +514,7 @@ export const MISSION_STAGES: MissionStageConfig[] = [
     code: "ETAPA 06",
     title: "Cierre, Transferencia y Beneficios",
     pmbokFocus: "Cierre Contractual, Lecciones Aprendidas y Evaluación de Beneficios (Cap. 14 / 4.6)",
+    imagePath: "/images/mission-stage6.jpg",
     objectives: [
       "Formalizar aceptación de la estación científica lunar y transferencia al centro operativo.",
       "Ejecutar cierre financiero y contractual (AstroDynamics, CryoLogix).",
