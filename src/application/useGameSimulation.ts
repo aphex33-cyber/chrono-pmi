@@ -13,9 +13,10 @@ import {
   PRE_TEST_QUESTIONS,
   evaluateQuiz,
 } from "@/domain/quiz";
-import { MODE_CONFIGS } from "@/domain/scenarios";
+import { LEVEL_CONFIGS, MODE_CONFIGS } from "@/domain/scenarios";
 import {
   DecisionOption,
+  DifficultyLevel,
   FinalEvaluation,
   GameState,
   LeaderboardEntry,
@@ -47,10 +48,10 @@ export interface UseGameSimulationResult {
   setWorkshopMode: (enabled: boolean) => void;
   setRoundTimerSeconds: (seconds: number | null) => void;
   refreshLeaderboard: () => Promise<void>;
-  startPreTest: (mode: ProjectMode) => void;
+  startPreTest: (mode: ProjectMode, level?: DifficultyLevel) => void;
   completePreTest: (selectedIndices: number[]) => void;
   beginSimulationFromPreTest: () => void;
-  startGameDirect: (mode: ProjectMode) => void;
+  startGameDirect: (mode: ProjectMode, level?: DifficultyLevel) => void;
   chooseOption: (option: DecisionOption) => void;
   nextRound: () => void;
   startPostTest: () => void;
@@ -123,21 +124,28 @@ export function useGameSimulation(): UseGameSimulationResult {
     setState((prev) => ({ ...prev, roundTimerSeconds: seconds }));
   }, []);
 
-  const startPreTest = useCallback((mode: ProjectMode) => {
-    setCurrentRunId(`run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
-    setState((prev) => ({
-      ...createInitialGameState(
-        null,
-        prev.participantName,
-        prev.workshopCode,
-        prev.workshopMode,
-        prev.roundTimerSeconds
-      ),
-      mode,
-      status: "pretest",
-      indicators: { ...MODE_CONFIGS[mode].initialIndicators },
-    }));
-  }, []);
+  const startPreTest = useCallback(
+    (mode: ProjectMode, level: DifficultyLevel = 1) => {
+      setCurrentRunId(
+        `run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+      );
+      setState((prev) => ({
+        ...createInitialGameState(
+          null,
+          prev.participantName,
+          prev.workshopCode,
+          prev.workshopMode,
+          prev.roundTimerSeconds,
+          level
+        ),
+        mode,
+        level,
+        status: "pretest",
+        indicators: { ...LEVEL_CONFIGS[level].initialIndicators },
+      }));
+    },
+    []
+  );
 
   const completePreTest = useCallback((selectedIndices: number[]) => {
     const result = evaluateQuiz("pre", PRE_TEST_QUESTIONS, selectedIndices);
@@ -154,7 +162,7 @@ export function useGameSimulation(): UseGameSimulationResult {
         ...prev,
         status: "playing",
         currentRoundIndex: 0,
-        indicators: { ...MODE_CONFIGS[prev.mode].initialIndicators },
+        indicators: { ...LEVEL_CONFIGS[prev.level].initialIndicators },
         lastDeltas: null,
         lastOutcome: null,
         failedIndicator: null,
@@ -163,20 +171,26 @@ export function useGameSimulation(): UseGameSimulationResult {
     });
   }, []);
 
-  const startGameDirect = useCallback((mode: ProjectMode) => {
-    setCurrentRunId(`run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`);
-    setState((prev) => ({
-      ...createInitialGameState(
-        mode,
-        prev.participantName,
-        prev.workshopCode,
-        prev.workshopMode,
-        prev.roundTimerSeconds
-      ),
-      preTestResult: null,
-      postTestResult: null,
-    }));
-  }, []);
+  const startGameDirect = useCallback(
+    (mode: ProjectMode, level: DifficultyLevel = 1) => {
+      setCurrentRunId(
+        `run-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+      );
+      setState((prev) => ({
+        ...createInitialGameState(
+          mode,
+          prev.participantName,
+          prev.workshopCode,
+          prev.workshopMode,
+          prev.roundTimerSeconds,
+          level
+        ),
+        preTestResult: null,
+        postTestResult: null,
+      }));
+    },
+    []
+  );
 
   const modeConfig = useMemo<ModeConfig | null>(() => {
     if (!state.mode) return null;
@@ -185,9 +199,9 @@ export function useGameSimulation(): UseGameSimulationResult {
 
   const currentScenario = useMemo<Scenario | null>(() => {
     if (!state.mode) return null;
-    const scenarios = getScenariosForMode(state.mode);
+    const scenarios = getScenariosForMode(state.mode, state.level);
     return scenarios[state.currentRoundIndex] ?? null;
-  }, [state.mode, state.currentRoundIndex]);
+  }, [state.mode, state.level, state.currentRoundIndex]);
 
   const persistRunToLeaderboard = useCallback(
     (nextState: GameState) => {
@@ -225,6 +239,7 @@ export function useGameSimulation(): UseGameSimulationResult {
         participantName: nextState.participantName.trim() || "Comandante Anónimo",
         workshopCode: nextState.workshopCode.trim().toUpperCase(),
         mode: nextState.mode,
+        level: nextState.level,
         status: nextState.status,
         simulationScore: evalResult ? evalResult.totalScore : decisionPts,
         grade: evalResult ? evalResult.grade : "F",

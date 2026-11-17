@@ -103,7 +103,7 @@ export async function fetchRemoteLeaderboard(
     const filter = workshopCode?.trim()
       ? `&workshop_code=eq.${encodeURIComponent(workshopCode.trim().toUpperCase())}`
       : "";
-    const url = `${SUPABASE_URL}/rest/v1/chrono_pmi_results?select=id,participant_name,workshop_code,mode,status,simulation_score,grade,pre_test_score,pre_test_level,post_test_score,gaps_detected,gaps_closed,total_gaps,indicators,played_at&order=simulation_score.desc&limit=100${filter}`;
+    const url = `${SUPABASE_URL}/rest/v1/chrono_pmi_results?select=id,participant_name,workshop_code,mode,level,status,simulation_score,grade,pre_test_score,pre_test_level,post_test_score,gaps_detected,gaps_closed,total_gaps,indicators,played_at&order=simulation_score.desc&limit=100${filter}`;
     const res = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -116,6 +116,7 @@ export async function fetchRemoteLeaderboard(
       participant_name: string;
       workshop_code: string;
       mode: "private" | "public";
+      level?: 1 | 2 | 3;
       status: "victory" | "gameover";
       simulation_score: number;
       grade: "S" | "A" | "B" | "C" | "F";
@@ -133,6 +134,7 @@ export async function fetchRemoteLeaderboard(
       participantName: r.participant_name,
       workshopCode: r.workshop_code ?? "",
       mode: r.mode,
+      level: r.level ?? 1,
       status: r.status,
       simulationScore: r.simulation_score,
       grade: r.grade,
@@ -166,6 +168,7 @@ async function syncEntryToSupabase(entry: LeaderboardEntry): Promise<void> {
         participant_name: entry.participantName,
         workshop_code: entry.workshopCode,
         mode: entry.mode,
+        level: entry.level,
         status: entry.status,
         simulation_score: entry.simulationScore,
         grade: entry.grade,

@@ -1,6 +1,9 @@
-import { MODE_CONFIGS, PRIVATE_SCENARIOS, PUBLIC_SCENARIOS } from "./scenarios";
+import { LEVEL_CONFIGS, MODE_CONFIGS, PRIVATE_SCENARIOS, PUBLIC_SCENARIOS } from "./scenarios";
+import { PRIVATE_LEVEL2_SCENARIOS, PUBLIC_LEVEL2_SCENARIOS } from "./scenariosLevel2";
+import { PRIVATE_LEVEL3_SCENARIOS, PUBLIC_LEVEL3_SCENARIOS } from "./scenariosLevel3";
 import {
   DecisionOption,
+  DifficultyLevel,
   FinalEvaluation,
   GameIndicators,
   GameState,
@@ -35,7 +38,16 @@ export function clampIndicator(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
-export function getScenariosForMode(mode: ProjectMode): Scenario[] {
+export function getScenariosForMode(
+  mode: ProjectMode,
+  level: DifficultyLevel = 1
+): Scenario[] {
+  if (level === 2) {
+    return mode === "private" ? PRIVATE_LEVEL2_SCENARIOS : PUBLIC_LEVEL2_SCENARIOS;
+  }
+  if (level === 3) {
+    return mode === "private" ? PRIVATE_LEVEL3_SCENARIOS : PUBLIC_LEVEL3_SCENARIOS;
+  }
   return mode === "private" ? PRIVATE_SCENARIOS : PUBLIC_SCENARIOS;
 }
 
@@ -44,11 +56,12 @@ export function createInitialGameState(
   participantName = "",
   workshopCode = "",
   workshopMode = false,
-  roundTimerSeconds: number | null = null
+  roundTimerSeconds: number | null = null,
+  level: DifficultyLevel = 1
 ): GameState {
-  const initialIndicators: GameIndicators = mode
-    ? { ...MODE_CONFIGS[mode].initialIndicators }
-    : { budget: 80, schedule: 80, morale: 80, stakeholders: 80 };
+  const initialIndicators: GameIndicators = {
+    ...LEVEL_CONFIGS[level].initialIndicators,
+  };
 
   return {
     participantName,
@@ -56,6 +69,7 @@ export function createInitialGameState(
     workshopMode,
     roundTimerSeconds,
     mode,
+    level,
     status: mode ? "playing" : "start",
     currentRoundIndex: 0,
     indicators: initialIndicators,
@@ -315,9 +329,7 @@ export function evaluatePerformance(state: GameState): FinalEvaluation {
     );
   }
 
-  const initialIndicators: GameIndicators = state.mode
-    ? MODE_CONFIGS[state.mode].initialIndicators
-    : { budget: 80, schedule: 80, morale: 80, stakeholders: 80 };
+  const initialIndicators: GameIndicators = LEVEL_CONFIGS[state.level].initialIndicators;
 
   const variableImpacts: VariableImpactReport[] = INDICATOR_ORDER.map((key) =>
     buildVariableImpactReport(

@@ -1,5 +1,7 @@
 export type ProjectMode = "private" | "public";
 
+export type DifficultyLevel = 1 | 2 | 3;
+
 export type IndicatorKey = "budget" | "schedule" | "morale" | "stakeholders";
 
 export type PmbokDomain =
@@ -103,6 +105,7 @@ export interface GameState {
   workshopMode: boolean;
   roundTimerSeconds: number | null;
   mode: ProjectMode | null;
+  level: DifficultyLevel;
   status: GameStatus;
   currentRoundIndex: number;
   indicators: GameIndicators;
@@ -163,6 +166,7 @@ export interface LeaderboardEntry {
   participantName: string;
   workshopCode: string;
   mode: ProjectMode;
+  level: DifficultyLevel;
   status: "victory" | "gameover";
   simulationScore: number;
   grade: "S" | "A" | "B" | "C" | "F";

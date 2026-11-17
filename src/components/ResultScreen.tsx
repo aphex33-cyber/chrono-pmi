@@ -2,6 +2,7 @@
 
 import {
   AlertTriangle,
+  ArrowRight,
   Award,
   BarChart3,
   CheckCircle2,
@@ -11,6 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { INDICATOR_LABELS, TOTAL_ROUNDS, formatBudgetUsd } from "@/domain/engine";
+import { LEVEL_CONFIGS } from "@/domain/scenarios";
 import { FinalEvaluation, GameState, ProjectMode } from "@/domain/types";
 
 interface ResultScreenProps {
@@ -18,6 +20,7 @@ interface ResultScreenProps {
   mode: ProjectMode;
   evaluation: FinalEvaluation | null;
   onRetrySameMode: () => void;
+  onNextLevel?: () => void;
   onStartPostTest: () => void;
   onBackToStart: () => void;
 }
@@ -27,6 +30,7 @@ export function ResultScreen({
   mode,
   evaluation,
   onRetrySameMode,
+  onNextLevel,
   onStartPostTest,
   onBackToStart,
 }: ResultScreenProps) {
@@ -412,6 +416,19 @@ export function ResultScreen({
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 border-t border-zinc-800 pt-5">
+              {state.level < 3 && onNextLevel && (
+                <button
+                  type="button"
+                  onClick={onNextLevel}
+                  className="inline-flex items-center gap-2 rounded-sm border-2 border-black bg-cyan-400 px-5 py-3 font-mono text-xs font-black uppercase tracking-wider text-zinc-950 shadow-[3px_3px_0px_#000] transition-colors hover:bg-cyan-300 cursor-pointer"
+                >
+                  <span>
+                    Subir a Nivel {state.level + 1}:{" "}
+                    {LEVEL_CONFIGS[(state.level + 1) as 2 | 3].title}
+                  </span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onStartPostTest}

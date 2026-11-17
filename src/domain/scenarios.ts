@@ -1,4 +1,36 @@
-import { ModeConfig, ProjectMode, Scenario } from "./types";
+import { DifficultyLevel, GameIndicators, ModeConfig, ProjectMode, Scenario } from "./types";
+
+export interface LevelConfig {
+  level: DifficultyLevel;
+  badge: string;
+  title: string;
+  shortDesc: string;
+  initialIndicators: GameIndicators;
+}
+
+export const LEVEL_CONFIGS: Record<DifficultyLevel, LevelConfig> = {
+  1: {
+    level: 1,
+    badge: "NIVEL 1",
+    title: "Fundamentos PMBOK",
+    shortDesc: "8 crisis tácticas esenciales (Ideal para iniciar).",
+    initialIndicators: { budget: 80, schedule: 80, morale: 80, stakeholders: 80 },
+  },
+  2: {
+    level: 2,
+    badge: "NIVEL 2",
+    title: "Táctico Avanzado",
+    shortDesc: "8 casos difíciles: EVM, contratos, ruta crítica y conflictos.",
+    initialIndicators: { budget: 72, schedule: 72, morale: 72, stakeholders: 72 },
+  },
+  3: {
+    level: 3,
+    badge: "NIVEL 3",
+    title: "Proyecto Integral",
+    shortDesc: "Caso maestro de inicio a cierre (Puente / App de Quejas).",
+    initialIndicators: { budget: 75, schedule: 75, morale: 75, stakeholders: 75 },
+  },
+};
 
 export const MODE_CONFIGS: Record<ProjectMode, ModeConfig> = {
   private: {

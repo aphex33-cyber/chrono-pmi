@@ -8,7 +8,7 @@ import { HudPanel } from "@/components/HudPanel";
 import { QuizScreen } from "@/components/QuizScreen";
 import { ResultScreen } from "@/components/ResultScreen";
 import { StartScreen } from "@/components/StartScreen";
-import { DecisionOption, ProjectMode } from "@/domain/types";
+import { DecisionOption, DifficultyLevel, ProjectMode } from "@/domain/types";
 import { soundEngine } from "@/infrastructure/soundEngine";
 
 export default function HomePage() {
@@ -46,14 +46,14 @@ export default function HomePage() {
     soundEngine.setMuted(nextMuted);
   };
 
-  const handleStartWithPreTest = (mode: ProjectMode) => {
+  const handleStartWithPreTest = (mode: ProjectMode, level: DifficultyLevel) => {
     soundEngine.playPanelSlam();
-    startPreTest(mode);
+    startPreTest(mode, level);
   };
 
-  const handleStartDirect = (mode: ProjectMode) => {
+  const handleStartDirect = (mode: ProjectMode, level: DifficultyLevel) => {
     soundEngine.playPanelSlam();
-    startGameDirect(mode);
+    startGameDirect(mode, level);
   };
 
   const handleChooseOption = (option: DecisionOption) => {
@@ -148,7 +148,16 @@ export default function HomePage() {
         state={state}
         mode={state.mode}
         evaluation={evaluation}
-        onRetrySameMode={() => handleStartDirect(state.mode!)}
+        onRetrySameMode={() => handleStartDirect(state.mode!, state.level)}
+        onNextLevel={
+          state.level < 3
+            ? () =>
+                handleStartDirect(
+                  state.mode!,
+                  (state.level + 1) as DifficultyLevel
+                )
+            : undefined
+        }
         onStartPostTest={startPostTest}
         onBackToStart={resetGame}
       />
@@ -168,7 +177,7 @@ export default function HomePage() {
     <div className="min-h-screen comic-page-bg flex flex-col">
       <HudPanel
         mode={state.mode}
-        modeTitle={modeConfig.subtitle}
+        modeTitle={`${modeConfig.subtitle} · NIVEL ${state.level}`}
         round={currentScenario.round}
         indicators={state.indicators}
         lastDeltas={state.lastDeltas}
