@@ -128,20 +128,20 @@ export function StartScreen({
 
         {/* Compact Hero Banner */}
         <div className="comic-panel relative overflow-hidden rounded-2xl">
-          <div className="relative aspect-[16/6] w-full overflow-hidden sm:aspect-[16/5]">
+          <div className="relative aspect-video w-full overflow-hidden sm:aspect-[16/5]">
             <img
               src="/images/cover.jpg"
               alt="Director de proyectos en centro de mando táctico estilo anime Gainax"
               className="h-full w-full object-cover object-center"
             />
             <div className="scanlines-overlay pointer-events-none absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/65 to-transparent" />
+            <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/65 to-transparent" />
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              <h1 className="text-2xl font-black tracking-tight text-white sm:text-4xl">
+            <div className="hidden sm:block absolute bottom-0 left-0 right-0 p-6">
+              <h1 className="text-4xl font-black tracking-tight text-white">
                 CHRONO<span className="text-amber-400">-PMI</span>
               </h1>
-              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-zinc-200 sm:text-sm">
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-200">
                 Toma decisiones de proyecto como Director en formato cómic. Cuida{" "}
                 <span className="font-semibold text-amber-300">Presupuesto</span>,{" "}
                 <span className="font-semibold text-cyan-300">Cronograma</span>,{" "}
@@ -149,6 +149,19 @@ export function StartScreen({
                 <span className="font-semibold text-violet-300">Stakeholders</span>.
               </p>
             </div>
+          </div>
+
+          <div className="border-t border-white/10 p-4 sm:hidden">
+            <h1 className="text-2xl font-black tracking-tight text-white">
+              CHRONO<span className="text-amber-400">-PMI</span>
+            </h1>
+            <p className="mt-1 text-xs leading-relaxed text-zinc-200">
+              Simulador de dirección de proyectos. Cuida{" "}
+              <span className="font-semibold text-amber-300">Presupuesto</span>,{" "}
+              <span className="font-semibold text-cyan-300">Cronograma</span>,{" "}
+              <span className="font-semibold text-emerald-300">Moral</span> y{" "}
+              <span className="font-semibold text-violet-300">Stakeholders</span>.
+            </p>
           </div>
         </div>
 
