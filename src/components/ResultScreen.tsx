@@ -247,20 +247,26 @@ export function ResultScreen({
 
             {/* Final HUD Summary */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-sm border border-zinc-800 bg-zinc-900 p-3">
+              <div className="rounded-xl border border-white/10 bg-zinc-900/80 p-3">
                 <p className="font-mono text-[11px] text-zinc-400">
-                  Presupuesto Final ({state.indicators.budget}%)
+                  Salud Presupuestaria
                 </p>
                 <p className="mt-1 font-mono text-lg font-bold text-amber-300">
-                  {formatBudgetUsd(state.indicators.budget, mode)}
+                  {state.indicators.budget}%
+                </p>
+                <p className="font-mono text-[10px] text-zinc-400">
+                  Margen disp: {formatBudgetUsd(state.indicators.budget, mode)}
                 </p>
               </div>
-              <div className="rounded-sm border border-zinc-800 bg-zinc-900 p-3">
+              <div className="rounded-xl border border-white/10 bg-zinc-900/80 p-3">
                 <p className="font-mono text-[11px] text-zinc-400">
-                  Cronograma
+                  Salud Cronograma
                 </p>
                 <p className="mt-1 font-mono text-lg font-bold text-cyan-300">
                   {state.indicators.schedule}%
+                </p>
+                <p className="font-mono text-[10px] text-zinc-400">
+                  Cumplimiento de plazo
                 </p>
               </div>
               <div className="rounded-sm border border-zinc-800 bg-zinc-900 p-3">

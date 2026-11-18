@@ -67,6 +67,32 @@ function getBarColorClass(value: number, defaultAccent: string): string {
   return defaultAccent;
 }
 
+function getIndicatorStatusText(
+  key: IndicatorKey,
+  value: number,
+  mode: ProjectMode
+): string {
+  if (key === "budget") {
+    const disp = formatBudgetUsd(value, mode);
+    if (value >= 70) return `Margen disp: ${disp} · En presupuesto`;
+    if (value >= 46) return `Margen disp: ${disp} · Presión de gasto`;
+    return `Margen disp: ${disp} · Sobregiro crítico`;
+  }
+  if (key === "schedule") {
+    if (value >= 70) return "Cumplimiento de plazo · En ruta";
+    if (value >= 46) return "Holgura consumida · Riesgo atraso";
+    return "Desfase severo · Atraso crítico";
+  }
+  if (key === "morale") {
+    if (value >= 70) return "Ritmo sostenible · Equipo firme";
+    if (value >= 46) return "Desgaste moderado";
+    return "Fatiga alta · Riesgo burnout";
+  }
+  if (value >= 70) return "Respaldo sólido";
+  if (value >= 46) return "Fricción con interesados";
+  return "Confianza crítica · Riesgo veto";
+}
+
 export function HudPanel({
   mode,
   modeTitle,
@@ -216,9 +242,7 @@ export function HudPanel({
                         isCritical ? "text-red-400" : "text-zinc-100"
                       }
                     >
-                      {key === "budget"
-                        ? formatBudgetUsd(value, mode)
-                        : `${value}%`}
+                      {value}%
                     </span>
                   </div>
                 </div>
@@ -229,6 +253,10 @@ export function HudPanel({
                     style={{ width: `${value}%` }}
                   />
                 </div>
+
+                <p className="mt-1 truncate font-mono text-[10px] text-zinc-400">
+                  {getIndicatorStatusText(key, value, mode)}
+                </p>
               </div>
             );
           })}

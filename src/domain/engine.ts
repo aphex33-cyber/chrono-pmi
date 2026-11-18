@@ -29,10 +29,10 @@ const INDICATOR_ORDER: IndicatorKey[] = [
 ];
 
 export const INDICATOR_LABELS: Record<IndicatorKey, string> = {
-  budget: "Presupuesto ($)",
-  schedule: "Cronograma / Tiempo (%)",
+  budget: "Salud Presupuestaria (Margen Disp.)",
+  schedule: "Salud del Cronograma (Cumplimiento de Plazo)",
   morale: "Moral del Equipo (%)",
-  stakeholders: "Satisfacción Stakeholders (%)",
+  stakeholders: "Alineación Stakeholders (%)",
 };
 
 export function clampIndicator(value: number): number {
